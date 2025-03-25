@@ -1,28 +1,52 @@
 # Amamoto
 
-**Status:** Early Development (Agile & Flexible)
+**Status:** Early Development (Phase 0 - Technical Validation)
 
-## Overview
-This project aims to create a **2D, top-down traffic simulation** that runs in a web browser. The initial goal is to allow users to **draw roads**, place vehicles, and experiment with **basic traffic rules** (e.g., lights, roundabouts).
+## Project Vision
+A sophisticated web-based 2D traffic simulation platform powered by C++ that grows from a solid MVP to an advanced distributed computing system. Users can design road networks, run complex simulations, and eventually participate in a distributed computation network using shared computational resources.
 
-## Key Features (Planned)
-- **Interactive Road Editor** (draw roads, set directions/lanes)
-- **Simple Vehicle Entities** (uniform speed, optional collision)
-- **Traffic Lights & Basic AI** (red/green cycles, roundabouts)
-- **Dark/Light Mode** (toggle between themes)
+## Core Technologies
+- **Simulation Engine**: C++ compiled to WebAssembly for high performance
+- **GPU Acceleration**: CUDA/OpenCL with progressive enhancement
+- **Frontend**: React with TypeScript for modern, type-safe UI
+- **Rendering**: WebGL for optimized visualization
+- **Distributed Computing**: WebRTC/WebSockets for shared computation
+
+## Key Features
+- **Sophisticated Road Network Editor**: Create complex road systems with multi-lane support
+- **Realistic Traffic Simulation**: Physics-based vehicle movement with collision detection
+- **Advanced Traffic Rules**: Traffic lights, roundabouts, lane changing, and merging
+- **GPU-Accelerated Performance**: Leverage GPU computing for large-scale simulations
+- **Real-Time Analytics**: Visualize traffic flow, congestion points, and optimization opportunities
+- **Resource Sharing**: Optional distributed computing to run massive simulations
 
 ## Development Approach
-- We’re keeping it **agile**—features may change or shift in priority as we learn and iterate.
-- Long-term potential includes **GPU optimization**, **Docker/Kubernetes deployment**, and **advanced AI** for traffic control.
+This project follows an incremental development approach with explicit risk management:
+- Begin with technical validation spikes to confirm core approaches
+- Deliver working software at each milestone
+- Focus on clean architecture and modular design
+- Implement comprehensive testing at all levels
 
-## Roadmap Summary
-1. **Phase 1:** Basic 2D editor + minimal simulation  
-2. **Phase 2:** Introduce traffic rules (lights, roundabouts, one-ways)  
-3. **Phase 3 (Optional):** Parallelization & GPU acceleration  
-4. **Phase 4 (Optional):** Packaging, advanced UI/UX, and containerization
+## Detailed Roadmap
 
-*(For more details, see our [Roadmap](https://zakabouj.notion.site/Project-Roadmap-2D-Web-Based-Traffic-Simulation-1b5408e5d09b8087b1bbe69979037d31?pvs=4) or the project’s Wiki/Issues.)*
+Our comprehensive development plan is outlined in [PROJECT_PLAN.md](docs/PROJECT_PLAN.md), with the following major phases:
 
-## Figma Mockups / Wireframes
-We’ve started conceptual designs in Figma to outline the UI and user flow.  
-**View them here:** [Figma: Amamoto Design](https://www.figma.com/design/DfW96Ax9LNfIDhSNfLHdxa/Amamoto?t=1hkhMSbdsfUiQ50J-0)
+1. **Phase 1:** Core MVP - Simulation Engine & Basic UI
+2. **Phase 2:** Enhanced Simulation & GPU Acceleration
+3. **Phase 3:** Machine Learning & Traffic Intelligence
+4. **Phase 4:** Distributed Computing Infrastructure
+5. **Phase 5:** Community Platform & Advanced Features
+
+## Technical Validation (Current Focus)
+We're currently focused on technical validation spikes to confirm key approaches:
+- WebAssembly/JavaScript bridge performance
+- GPU computation browser compatibility
+- Entity system performance at scale
+- Distributed computation verification methods
+
+## Getting Started
+
+Setup instructions for developers coming soon.
+
+## Design Concepts
+Visual design concepts available in [Figma: Amamoto Design](https://www.figma.com/design/DfW96Ax9LNfIDhSNfLHdxa/Amamoto?t=1hkhMSbdsfUiQ50J-0)
