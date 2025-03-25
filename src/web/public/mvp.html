@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amamoto - Traffic Simulation MVP</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 1px solid #fff;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .toolbar {
+            display: flex;
+            margin-bottom: 10px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-group {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            display: flex;
+            gap: 5px;
+            background-color: #f8f9fa;
+        }
+        
+        button {
+            padding: 8px 12px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background-color: #3367d6;
+        }
+        
+        button.active {
+            background-color: #3367d6;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+        
+        button.secondary {
+            background-color: #5f6368;
+        }
+        
+        button.secondary:hover {
+            background-color: #484a4d;
+        }
+        
+        button.danger {
+            background-color: #ea4335;
+        }
+        
+        button.danger:hover {
+            background-color: #d33828;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .canvas-container {
+            position: relative;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        canvas {
+            background-color: #f8f8f8;
+            display: block;
+        }
+        
+        .metrics {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f0fe;
+            border-left: 4px solid #4285f4;
+            border-radius: 4px;
+        }
+        
+        .status.error {
+            background-color: #fde8e8;
+            border-left: 4px solid #ea4335;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .checkbox-group label {
+            margin-left: 5px;
+        }
+        
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Amamoto - Traffic Simulation MVP</h1>
+            <div>
+                <button id="demo-btn">Load Demo</button>
+                <button id="save-btn">Save</button>
+                <button id="load-btn">Load</button>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="editor">Road Editor</div>
+            <div class="tab" data-tab="simulation">Simulation</div>
+        </div>
+        
+        <div id="editor-tab" class="tab-content active">
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <button id="select-btn" class="active">Select</button>
+                    <button id="create-road-btn">Create Road</button>
+                    <button id="create-intersection-btn">Create Intersection</button>
+                    <button id="delete-btn" class="danger">Delete</button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="show-grid" checked>
+                        <label for="show-grid">Show Grid</label>
+                    </div>
+                    
+                    <div class="flex-row">
+                        <label for="grid-size">Grid Size:</label>
+                        <select id="grid-size">
+                            <option value="10">10px</option>
+                            <option value="20" selected>20px</option>
+                            <option value="50">50px</option>
+                            <option value="100">100px</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="editor-canvas" width="1160" height="600"></canvas>
+            </div>
+            
+            <div class="status" id="editor-status">
+                Ready to edit road network. Click "Create Road" to start adding roads.
+            </div>
+        </div>
+        
+        <div id="simulation-tab" class="tab-content">
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <button id="add-vehicle-btn">Add Vehicle</button>
+                    <button id="add-100-vehicles-btn">Add 100 Vehicles</button>
+                    <button id="clear-btn">Clear All</button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button id="start-btn">Start Simulation</button>
+                    <button id="stop-btn" disabled>Stop Simulation</button>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="keep-in-bounds-cb" checked>
+                        <label for="keep-in-bounds-cb">Keep in bounds</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="simulation-canvas" width="1160" height="600"></canvas>
+            </div>
+            
+            <div class="metrics">
+                <p>Vehicle count: <span id="vehicle-count">0</span></p>
+                <p>Simulation FPS: <span id="fps">0</span></p>
+                <p>Memory usage: <span id="memory-usage">0</span> MB</p>
+            </div>
+            
+            <div class="status" id="simulation-status">
+                Ready to simulate. Click "Start Simulation" to begin.
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden file input for loading road networks -->
+    <input type="file" id="load-file" style="display: none">
+    
+    <!-- Scripts -->
+    <script type="module">
+        import { RoadEditor, EditorMode } from './road-editor.js';
+        import { initializeWithRoadNetwork, initSimulation } from './simulation.js';
+        
+        // DOM elements
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const editorCanvas = document.getElementById('editor-canvas');
+        const editorStatus = document.getElementById('editor-status');
+        const simulationCanvas = document.getElementById('simulation-canvas');
+        const simulationStatus = document.getElementById('simulation-status');
+        
+        // Editor mode buttons
+        const selectBtn = document.getElementById('select-btn');
+        const createRoadBtn = document.getElementById('create-road-btn');
+        const createIntersectionBtn = document.getElementById('create-intersection-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+        
+        // Grid controls
+        const showGridCheckbox = document.getElementById('show-grid');
+        const gridSizeSelect = document.getElementById('grid-size');
+        
+        // Action buttons
+        const demoBtn = document.getElementById('demo-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const loadBtn = document.getElementById('load-btn');
+        const loadFileInput = document.getElementById('load-file');
+        
+        // Global reference to road editor
+        let roadEditor = null;
+        
+        // Initialize canvas sizes
+        function initCanvasSizes() {
+            editorCanvas.width = editorCanvas.clientWidth;
+            editorCanvas.height = editorCanvas.clientHeight;
+            simulationCanvas.width = simulationCanvas.clientWidth;
+            simulationCanvas.height = simulationCanvas.clientHeight;
+        }
+        
+        // Initialize the road editor
+        function initEditor() {
+            roadEditor = new RoadEditor(editorCanvas, () => {
+                editorStatus.textContent = 'Road network updated.';
+                
+                // Update simulation with the new road network
+                const network = roadEditor.getRoadNetwork();
+                initializeWithRoadNetwork(network);
+            });
+            
+            // Set up editor mode buttons
+            selectBtn.addEventListener('click', () => {
+                roadEditor.setMode(EditorMode.SELECT);
+                setActiveButton(selectBtn);
+                editorStatus.textContent = 'Select mode: Click on roads or intersections to select them.';
+            });
+            
+            createRoadBtn.addEventListener('click', () => {
+                roadEditor.setMode(EditorMode.CREATE_ROAD);
+                setActiveButton(createRoadBtn);
+                editorStatus.textContent = 'Create Road mode: Click and drag to create a new road.';
+            });
+            
+            createIntersectionBtn.addEventListener('click', () => {
+                roadEditor.setMode(EditorMode.CREATE_INTERSECTION);
+                setActiveButton(createIntersectionBtn);
+                editorStatus.textContent = 'Create Intersection mode: Click on a road to create an intersection.';
+            });
+            
+            deleteBtn.addEventListener('click', () => {
+                roadEditor.setMode(EditorMode.DELETE);
+                setActiveButton(deleteBtn);
+                editorStatus.textContent = 'Delete mode: Click on a road or intersection to delete it.';
+            });
+            
+            // Set up grid controls
+            showGridCheckbox.addEventListener('change', () => {
+                roadEditor.toggleGrid();
+            });
+            
+            gridSizeSelect.addEventListener('change', () => {
+                roadEditor.setGridSize(parseInt(gridSizeSelect.value));
+            });
+            
+            // Set up action buttons
+            demoBtn.addEventListener('click', () => {
+                roadEditor.createDemoNetwork();
+                editorStatus.textContent = 'Demo road network created.';
+                
+                // Update simulation with the demo network
+                const network = roadEditor.getRoadNetwork();
+                initializeWithRoadNetwork(network);
+            });
+            
+            saveBtn.addEventListener('click', () => {
+                const json = roadEditor.saveToJSON();
+                const blob = new Blob([json], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'road-network.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                editorStatus.textContent = 'Road network saved.';
+            });
+            
+            loadBtn.addEventListener('click', () => {
+                loadFileInput.click();
+            });
+            
+            loadFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const json = e.target.result;
+                    const success = roadEditor.loadFromJSON(json);
+                    
+                    if (success) {
+                        editorStatus.textContent = 'Road network loaded successfully.';
+                        
+                        // Update simulation with the loaded network
+                        const network = roadEditor.getRoadNetwork();
+                        initializeWithRoadNetwork(network);
+                    } else {
+                        editorStatus.textContent = 'Error loading road network.';
+                        editorStatus.className = 'status error';
+                    }
+                };
+                
+                reader.readAsText(file);
+            });
+            
+            return roadEditor;
+        }
+        
+        // Set active button in a group
+        function setActiveButton(activeButton) {
+            const buttons = [selectBtn, createRoadBtn, createIntersectionBtn, deleteBtn];
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            activeButton.classList.add('active');
+        }
+        
+        // Handle tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Set active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabName = tab.dataset.tab;
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+                
+                // If switching to simulation tab, initialize simulation if needed
+                if (tabName === 'simulation' && roadEditor) {
+                    const network = roadEditor.getRoadNetwork();
+                    initializeWithRoadNetwork(network);
+                }
+            });
+        });
+        
+        // Initialize everything on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initCanvasSizes();
+            initEditor();
+            initSimulation();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                initCanvasSizes();
+                if (roadEditor) roadEditor.render();
+            });
+        });
+    </script>
+    
+    <!-- Load original simulation script -->
+    <script type="module" src="simulation.js"></script>
+</body>
+</html>
